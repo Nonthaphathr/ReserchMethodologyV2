@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Methodology Prompt Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Kanit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+            color: #000000;
+        }
+
+        /* Remove animated background */
+        body::before {
+            display: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            display: none;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 16px;
+            font-weight: 700;
+            color: white;
+            text-shadow: none;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+            font-weight: 400;
+            color: white;
+        }
+
+        .content {
+            padding: 40px;
+            background: white;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #000000;
+            font-size: 1.1em;
+        }
+
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            background: white;
+            color: #000000;
+        }
+
+        .form-group select::placeholder,
+        .form-group textarea::placeholder {
+            color: #666666;
+        }
+
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 20px 50px;
+            font-size: 1.3em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            width: 100%;
+            max-width: 350px;
+            display: block;
+            margin: 40px auto;
+            box-shadow: 
+                0 8px 32px rgba(102, 126, 234, 0.3),
+                0 4px 16px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            text-shadow: none;
+        }
+
+        .generate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .generate-btn:hover::before {
+            left: 100%;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 
+                0 16px 40px rgba(102, 126, 234, 0.4),
+                0 8px 24px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        }
+
+        .generate-btn:active {
+            transform: translateY(-2px);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            background: #9ca3af;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .output-section {
+            margin-top: 50px;
+            display: none;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .output-section.show {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .output-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .output-header h3 {
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .output-header p {
+            color: rgba(44, 62, 80, 0.8);
+            font-size: 1.1em;
+        }
+
+        .prompt-output {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 35px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            line-height: 1.7;
+            max-height: 600px;
+            overflow-y: auto;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-size: 14px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .prompt-output::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .prompt-output::-webkit-scrollbar-track {
+            background: #f3f4f6;
+            border-radius: 3px;
+        }
+
+        .prompt-output::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .ai-links {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .copy-btn, .clear-btn, .ai-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            font-size: 0.95em;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .copy-btn {
+            background: #10b981;
+            color: white;
+        }
+
+        .copy-btn:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .clear-btn {
+            background: #6b7280;
+            color: white;
+        }
+
+        .clear-btn:hover {
+            background: #4b5563;
+            transform: translateY(-1px);
+        }
+
+        .ai-btn.chatgpt {
+            background: #10a37f;
+            color: white;
+        }
+
+        .ai-btn.chatgpt:hover {
+            background: #0d8f6a;
+            transform: translateY(-1px);
+        }
+
+        .ai-btn.gemini {
+            background: #4285f4;
+            color: white;
+        }
+
+        .ai-btn.gemini:hover {
+            background: #3367d6;
+            transform: translateY(-1px);
+        }
+
+        .instructions {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .instructions h4 {
+            color: #374151;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            color: #6b7280;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .example {
+            background: #fefce8;
+            border: 2px solid #fde68a;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .example h4 {
+            color: #92400e;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .example p {
+            color: #78350f;
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+
+        .footer {
+            background: #f8fafc;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            text-align: center;
+            padding: 25px;
+            font-size: 0.9em;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+            border: 1px solid #a7f3d0;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 20px;
+            }
+
+            .header {
+                padding: 40px 25px;
+            }
+
+            .header h1 {
+                font-size: 2.2em;
+            }
+
+            .content {
+                padding: 35px 25px;
+            }
+
+            .action-buttons, .ai-links {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .copy-btn, .clear-btn, .ai-btn {
+                width: 100%;
+                max-width: 280px;
+            }
+
+            .form-group select,
+            .form-group textarea {
+                padding: 16px 20px;
+            }
+        }
+
+        /* Enhanced select styling */
+        select option {
+            background: rgba(255, 255, 255, 0.95);
+            color: #2c3e50;
+            padding: 10px;
+        }
+
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Research Methodology Generator</h1>
+            <p>สร้าง Prompt ที่ละเอียดครบถ้วนสำหรับการพัฒนาหัวข้อวิจัยทางการศึกษา</p>
+        </div>
+
+        <div class="content">
+            <div class="form-section">
+                <div class="form-group fade-in">
+                    <label for="researchType">🔬 ชนิดการวิจัย:</label>
+                    <select id="researchType" required>
+                        <option value="">-- กรุณาเลือกชนิดการวิจัย --</option>
+                        <option value="การวิจัยเชิงปริมาณ (Quantitative Research)">การวิจัยเชิงปริมาณ (Quantitative Research)</option>
+                        <option value="การวิจัยเชิงคุณภาพ (Qualitative Research)">การวิจัยเชิงคุณภาพ (Qualitative Research)</option>
+                        <option value="การวิจัยแบบผสม (Mixed Methods Research)">การวิจัยแบบผสม (Mixed Methods Research)</option>
+                        <option value="การวิจัยเชิงทดลอง (Experimental Research)">การวิจัยเชิงทดลอง (Experimental Research)</option>
+                        <option value="การวิจัยเชิงสำรวจ (Survey Research)">การวิจัยเชิงสำรวจ (Survey Research)</option>
+                        <option value="การวิจัยกรณีศึกษา (Case Study Research)">การวิจัยกรณีศึกษา (Case Study Research)</option>
+                        <option value="การวิจัยเชิงปฏิบัติการ (Action Research)">การวิจัยเชิงปฏิบัติการ (Action Research)</option>
+                    </select>
+                </div>
+
+                <div class="form-group fade-in">
+                    <label for="researchProblem">🎯 ประเด็นปัญหาที่สนใจ:</label>
+                    <textarea id="researchProblem" placeholder="ระบุปัญหาการวิจัยที่ต้องการศึกษา เช่น ปัญหาการเรียนออนไลน์ของนักเรียน, ประสิทธิภาพการสอนของครู, การบริหารจัดการโรงเรียน เป็นต้น" required></textarea>
+                </div>
+
+                <div class="form-group fade-in">
+                    <label for="targetGroup">👥 ขอบเขตกลุ่มเป้าหมาย:</label>
+                    <textarea id="targetGroup" placeholder="ระบุประชากรหรือกลุ่มตัวอย่างที่ต้องการศึกษา เช่น นักเรียนชั้นมัธยมศึกษาตอนต้น, ครูในโรงเรียนประถม, ผู้บริหารสถานศึกษา, ผู้ปกครอง เป็นต้น" required></textarea>
+                </div>
+
+                <button class="generate-btn" onclick="generatePrompt()">
+                    <span>✨ สร้าง Prompt ที่สมบูรณ์</span>
+                </button>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>🚀 กำลังสร้าง Prompt ที่ละเอียดและครบถ้วน...</p>
+            </div>
+
+            <div class="output-section" id="outputSection">
+                <div class="output-header">
+                    <h3>🎉 Prompt ที่สร้างเสร็จแล้ว</h3>
+                    <p>คัดลอก Prompt ด้านล่างไปใช้กับ AI หรือคลิกปุ่มเพื่อไปยัง ChatGPT หรือ Gemini โดยตรง</p>
+                </div>
+
+                <div class="prompt-output" id="promptOutput"></div>
+
+                <div class="action-buttons">
+                    <button class="copy-btn" onclick="copyPrompt()">
+                        📋 คัดลอก Prompt
+                    </button>
+                    <button class="clear-btn" onclick="clearForm()">
+                        🗑️ ล้างข้อมูล
+                    </button>
+                </div>
+
+                <div class="ai-links">
+                    <a href="#" class="ai-btn chatgpt" onclick="openChatGPT()">
+                        🤖 เปิดใน ChatGPT
+                    </a>
+                    <a href="#" class="ai-btn gemini" onclick="openGemini()">
+                        💎 เปิดใน Gemini
+                    </a>
+                </div>
+
+                <div class="success-message" id="successMessage">
+                    ✅ คัดลอก Prompt เรียบร้อยแล้ว!
+                </div>
+            </div>
+
+            <div class="instructions fade-in">
+                <h4>📋 วิธีการใช้งาน</h4>
+                <ul>
+                    <li>เลือกชนิดการวิจัยที่ต้องการศึกษา</li>
+                    <li>ระบุปัญหาการวิจัยที่สนใจอย่างละเอียด</li>
+                    <li>ระบุกลุ่มเป้าหมายและขอบเขตการศึกษา</li>
+                    <li>กดปุ่ม "สร้าง Prompt" เพื่อสร้าง Prompt ที่ละเอียดครบถ้วน</li>
+                    <li>คัดลอก Prompt หรือคลิกปุ่มเพื่อไปยัง AI โดยตรง</li>
+                    <li>AI จะให้คำแนะนำครบถ้วนรวมถึงการวิเคราะห์ตัวแปร</li>
+                </ul>
+            </div>
+
+            <div class="example fade-in">
+                <h4>💡 ตัวอย่างการกรอกข้อมูล</h4>
+                <p><strong>ชนิดการวิจัย:</strong> การวิจัยเชิงปริมาณ</p>
+                <p><strong>ประเด็นปัญหา:</strong> ปัญหาการเรียนออนไลน์ของนักเรียนในช่วงการแพร่ระบาดของโควิด-19 ที่ส่งผลต่อผลสัมฤทธิ์ทางการเรียน</p>
+                <p><strong>กลุ่มเป้าหมาย:</strong> นักเรียนชั้นมัธยมศึกษาตอนต้น ในโรงเรียนประถมและมัธยมศึกษา สังกัดสำนักงานเขตพื้นที่การศึกษา</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>พัฒนาโดย ครูนนทพัทธ์ หิรัญเรือง | Enhanced with Glass Design</p>
+        </div>
+    </div>
+
+    <script>
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Save data to memory instead of localStorage
+        let formData = {
+            researchType: '',
+            researchProblem: '',
+            targetGroup: ''
+        };
+
+        // Load saved data
+        window.addEventListener('load', function() {
+            document.getElementById('researchType').value = formData.researchType;
+            document.getElementById('researchProblem').value = formData.researchProblem;
+            document.getElementById('targetGroup').value = formData.targetGroup;
+
+            // Trigger fade-in animations
+            setTimeout(() => {
+                document.querySelectorAll('.fade-in').forEach(el => {
+                    el.classList.add('visible');
+                });
+            }, 100);
+        });
+
+        // Save data to memory on input
+        function saveToMemory() {
+            formData.researchType = document.getElementById('researchType').value;
+            formData.researchProblem = document.getElementById('researchProblem').value;
+            formData.targetGroup = document.getElementById('targetGroup').value;
+        }
+
+        document.getElementById('researchType').addEventListener('change', saveToMemory);
+        document.getElementById('researchProblem').addEventListener('input', saveToMemory);
+        document.getElementById('targetGroup').addEventListener('input', saveToMemory);
+
+        function generatePrompt() {
+            const researchType = document.getElementById('researchType').value;
+            const researchProblem = document.getElementById('researchProblem').value;
+            const targetGroup = document.getElementById('targetGroup').value;
+
+            if (!researchType || !researchProblem || !targetGroup) {
+                alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('outputSection').classList.remove('show');
+            document.querySelector('.generate-btn').disabled = true;
+
+            // Simulate processing time
+            setTimeout(() => {
+                const prompt = createDetailedPrompt(researchType, researchProblem, targetGroup);
+                
+                document.getElementById('promptOutput').textContent = prompt;
+                document.getElementById('loading').classList.remove('show');
+                document.getElementById('outputSection').classList.add('show');
+                document.querySelector('.generate-btn').disabled = false;
+
+                // Scroll to output
+                document.getElementById('outputSection').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 2000);
+        }
+
+        function createDetailedPrompt(researchType, researchProblem, targetGroup) {
+            return `คุณเป็นผู้เชี่ยวชาญด้านระเบียบวิธีวิจัยทางการศึกษาที่มีประสบการณ์ในการแนะนำนักศึกษาระดับบัณฑิตศึกษา ขอความช่วยเหลือในการพัฒนาโครงการวิจัย ${researchType} เกี่ยวกับ "${researchProblem}" สำหรับกลุ่มเป้าหมาย "${targetGroup}"
+
+## หลักการสำคัญในการพิจารณา:
+- หัวข้อและวัตถุประสงค์ต้องสอดคล้องกับประเภทการวิจัยที่เลือก
+- คำถามวิจัยต้องมีลักษณะ: ชัดเจน เฉพาะเจาะจง วัดได้ ตอบได้
+- วัตถุประสงค์ต้องขึ้นต้นด้วย "เพื่อ" แล้วตามด้วยกริยาแสดงการกระทำ
+- สมมติฐานต้องมีพื้นฐานทางทฤษฎีและทดสอบได้ (เฉพาะการวิจัยเชิงปริมาณ)
+- เครื่องมือและสถิติต้องเหมาะสมกับประเภทการวิจัยและข้อมูล
+
+## ขอเสนอแนะโดยละเอียดในหัวข้อต่อไปนี้:
+
+### 1. หัวข้อการวิจัย
+ให้หัวข้อการวิจัยที่สมบูรณ์ โดยมีคุณสมบัติ:
+- กะทัดรัด ชัดเจน ความยาวไม่เกิน 15-20 คำ
+- แสดงความสัมพันธ์ระหว่างตัวแปรหลัก
+- ระบุขอบเขตกลุ่มเป้าหมายและพื้นที่ศึกษา
+- สะท้อนประเภทการวิจัยที่เลือก
+- มีความน่าสนใจและสำคัญทางวิชาการ
+- อธิบายเหตุผลในการตั้งหัวข้อนี้
+- ระบุคำสำคัญ (Keywords) ที่เกี่ยวข้อง
+
+### 2. การวิเคราะห์และจำแนกตัวแปรจากหัวข้อ
+ให้วิเคราะห์ตัวแปรที่เกี่ยวข้องอย่างครบถ้วนจากหัวข้อที่กำหนดแล้ว:
+
+**2.1 การระบุและจำแนกตัวแปร:**
+- **ตัวแปรอิสระ (Independent Variables)**: ตัวแปรที่เป็นสาเหตุหรือปัจจัยที่ส่งผลต่อผลลัพธ์
+- **ตัวแปรตาม (Dependent Variables)**: ตัวแปรที่เป็นผลลัพธ์หรือสิ่งที่ต้องการศึกษา
+- **ตัวแปรควบคุม (Control Variables)**: ตัวแปรที่ต้องควบคุมให้คงที่
+- **ตัวแปรกำกับ (Moderating Variables)**: ตัวแปรที่อาจปรับความสัมพันธ์ระหว่างตัวแปรอิสระและตาม
+- **ตัวแปรแทรกแซง (Mediating Variables)**: ตัวแปรที่เป็นตัวกลางในความสัมพันธ์
+
+**2.2 ประเภทของข้อมูลตัวแปร:**
+- **ข้อมูลเชิงคุณภาพ (Qualitative Data)**:
+  - ข้อมูลนามนัย (Nominal): เพศ, ศาสนา, สถานที่
+  - ข้อมูลเรียงลำดับ (Ordinal): ระดับความพึงพอใจ, อันดับ
+- **ข้อมูลเชิงปริมาณ (Quantitative Data)**:
+  - ข้อมูลอันตรภาค (Interval): คะแนนสอบ, อุณหภูมิ
+  - ข้อมูลอัตราส่วน (Ratio): น้ำหนัก, ส่วนสูง, อายุ
+
+**2.3 การกำหนดนิยามเชิงปฏิบัติการ (Operational Definition):**
+สำหรับแต่ละตัวแปรหลัก:
+- นิยามความหมายที่ชัดเจน
+- วิธีการวัดหรือประเมิน
+- เกณฑ์หรือมาตรฐานที่ใช้
+- เครื่องมือที่ใช้ในการเก็บข้อมูล
+
+### 3. วัตถุประสงค์การวิจัย 
+ให้ชุดวัตถุประสงค์ที่สมบูรณ์ (3-5 ข้อ) โดย:
+- เขียนในรูป "เพื่อ + กริยา + สิ่งที่จะทำ"
+- เรียงลำดับจากวัตถุประสงค์หลักไปย่อย
+- ครอบคลุมทุกมิติของการศึกษา
+- สอดคล้องกับหัวข้อและประเภทการวิจัย
+
+### 4. คำถามการวิจัย
+ให้ชุดคำถามวิจัยที่ครอบคลุม (4-6 คำถาม) แบ่งตามประเภท:
+- **คำถามเชิงพรรณนา (Descriptive)**: "ระดับ...เป็นอย่างไร", "สถานการณ์...เป็นอย่างไร"
+- **คำถามเชิงเปรียบเทียบ (Comparative)**: "แตกต่างกันอย่างไร", "กลุ่มใดมี...มากกว่า"
+- **คำถามเชิงสัมพันธ์ (Relationship)**: "มีความสัมพันธ์อย่างไร", "ระดับความสัมพันธ์เป็นอย่างไร"
+- **คำถามเชิงสาเหตุ (Causal)**: "มีผลต่อ...อย่างไร", "ปัจจัยใดส่งผลต่อ..."
+
+### 5. สมมติฐานการวิจัย
+**สำหรับการวิจัยเชิงปริมาณ:**
+ให้สมมติฐานที่สมบูรณ์ (2-4 ข้อ) ประกอบด้วย:
+- สมมติฐานทางการวิจัย (Research Hypothesis)
+- สมมติฐานทางสถิติ (Statistical Hypothesis) ทั้ง H₀ และ H₁
+- มีพื้นฐานทางทฤษฎีสนับสนุน
+- ระบุทิศทางความสัมพันธ์ (หากมี)
+- ทดสอบได้และวัดได้
+- อธิบายเหตุผลในการตั้งสมมติฐาน
+
+**สำหรับการวิจัยเชิงคุณภาพ:**
+- ระบุ "คำถามนำทาง" หรือ "กรอบแนวคิดเบื้องต้น"
+- แนวคิดหรือทฤษฎีที่ใช้เป็นกรอบการศึกษา
+- ประเด็นที่คาดว่าจะค้นพบ
+
+### 6. แนวทางการเก็บและจัดการข้อมูล
+ให้รายละเอียดครบถ้วนประกอบด้วย:
+
+**6.1 เครื่องมือวิจัย:**
+- ประเภทเครื่องมือที่เหมาะสม
+- โครงสร้างของเครื่องมือ
+- ประเภทคำถามและวิธีการสร้าง
+
+**6.2 การสุ่มตัวอย่าง:**
+- วิธีการสุ่มที่เหมาะสม
+- ขนาดตัวอย่างและวิธีการคำนวณ
+- เกณฑ์การคัดเข้า-คัดออก
+
+**6.3 การตรวจสอบคุณภาพ:**
+- ความเที่ยงตรง (Validity) และความเชื่อมั่น (Reliability)
+- การทดลองใช้เครื่องมือ (Pilot Test)
+
+### 7. สถิติและการวิเคราะห์ข้อมูล
+
+**สำหรับการวิจัยเชิงปริมาณ:**
+- สถิติเชิงพรรณนา: ค่าเฉลี่ย ค่าเบี่ยงเบน ร้อยละ
+- สถิติเชิงอนุมาน: t-test, ANOVA, Chi-square, Correlation
+- โปรแกรมที่ใช้: SPSS, R, Excel
+
+**สำหรับการวิจัยเชิงคุณภาพ:**
+- การวิเคราะห์เนื้อหา (Content Analysis)
+- การวิเคราะห์ธีม (Thematic Analysis)
+- การรับรองคุณภาพ: Credibility, Transferability
+
+## รายละเอียดเพิ่มเติม:
+- อธิบายเหตุผลในการเลือกวิธีการแต่ละอย่าง
+- ระบุข้อดี-ข้อเสียและข้อควรระวัง
+- แนะนำแหล่งข้อมูลและทฤษฎีที่เกี่ยวข้อง
+- ให้คำแนะนำเพิ่มเติมสำหรับการปรับปรุง
+- แนะนำเอกสารอ้างอิงสำคัญ
+
+## หมายเหตุสำคัญ:
+- ทุกข้อเสนอแนะต้องคำนึงถึงความเป็นไปได้ในทางปฏิบัติ
+- ต้องสอดคล้องกับทรัพยากร เวลา และข้อจำกัดที่มี
+- ปฏิบัติตามจริยธรรมการวิจัยและความปลอดภัยของผู้เข้าร่วม
+- ผลการวิจัยต้องสามารถนำไปใช้ประโยชน์ได้จริง
+- ควรปรึกษาผู้เชี่ยวชาญก่อนเริ่มดำเนินการ`;
+        }
+
+        function copyPrompt() {
+            const promptText = document.getElementById('promptOutput').textContent;
+            
+            navigator.clipboard.writeText(promptText).then(() => {
+                showSuccessMessage();
+            }).catch(err => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = promptText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showSuccessMessage();
+            });
+        }
+
+        function showSuccessMessage() {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.classList.add('show');
+            
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+            }, 3000);
+        }
+
+        function openChatGPT() {
+            const promptText = document.getElementById('promptOutput').textContent;
+            if (promptText) {
+                // Copy to clipboard first
+                navigator.clipboard.writeText(promptText).then(() => {
+                    showSuccessMessage();
+                    // Open ChatGPT in new tab
+                    window.open('https://chat.openai.com/', '_blank');
+                }).catch(() => {
+                    // If clipboard fails, still open ChatGPT
+                    window.open('https://chat.openai.com/', '_blank');
+                });
+            } else {
+                alert('กรุณาสร้าง Prompt ก่อนเปิด ChatGPT');
+            }
+        }
+
+        function openGemini() {
+            const promptText = document.getElementById('promptOutput').textContent;
+            if (promptText) {
+                // Copy to clipboard first
+                navigator.clipboard.writeText(promptText).then(() => {
+                    showSuccessMessage();
+                    // Open Gemini in new tab
+                    window.open('https://gemini.google.com/', '_blank');
+                }).catch(() => {
+                    // If clipboard fails, still open Gemini
+                    window.open('https://gemini.google.com/', '_blank');
+                });
+            } else {
+                alert('กรุณาสร้าง Prompt ก่อนเปิด Gemini');
+            }
+        }
+
+        function clearForm() {
+            if (confirm('คุณต้องการล้างข้อมูลทั้งหมดใช่หรือไม่?')) {
+                document.getElementById('researchType').value = '';
+                document.getElementById('researchProblem').value = '';
+                document.getElementById('targetGroup').value = '';
+                document.getElementById('outputSection').classList.remove('show');
+                
+                // Clear memory data
+                formData = {
+                    researchType: '',
+                    researchProblem: '',
+                    targetGroup: ''
+                };
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add focus effects to form elements
+            const formElements = document.querySelectorAll('select, textarea');
+            formElements.forEach(element => {
+                element.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'translateY(-2px)';
+                    this.parentElement.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                });
+                
+                element.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Add hover effects to buttons
+            const buttons = document.querySelectorAll('.copy-btn, .clear-btn, .ai-btn, .generate-btn');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+                
+                button.addEventListener('mouseleave', function() {
+                    if (!this.disabled) {
+                        this.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+        });
+
+        // Parallax effect for background
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * -0.5;
+            document.body.style.backgroundPosition = `center ${rate}px`;
+        });
+
+        // Add typing effect to header
+        let headerText = '🎯 Research Methodology Generator';
+        let headerSubText = 'สร้าง Prompt ที่ละเอียดครบถ้วนสำหรับการพัฒนาหัวข้อวิจัยทางการศึกษา';
+        
+        function typeWriter(element, text, speed = 50) {
+            element.innerHTML = '';
+            let i = 0;
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        // Initialize typing effect on load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const h1 = document.querySelector('.header h1');
+                const p = document.querySelector('.header p');
+                
+                typeWriter(h1, headerText, 80);
+                setTimeout(() => {
+                    typeWriter(p, headerSubText, 40);
+                }, headerText.length * 80 + 500);
+            }, 500);
+        });
+    </script>
+</body>
+</html>
